@@ -10,11 +10,11 @@ const options: any = {
         info: {
             title: "DEMO API",
             description: "Learning Swagger",
-            version: "1.0.0",  // Make sure to add version if available
+            version: "1.0.0",  
         },
         servers: [
             {
-                url: "http://localhost:4000",  // Your API server URL
+                url: "http://localhost:4000",  
                 description: "Local Development Server",
             },
         ],
@@ -51,8 +51,8 @@ const options: any = {
     },
     
 
-    
-    apis: ["./src/routes/**/*.ts"], 
+
+    apis: ["./src/routes/**/*.ts","./dist/routes/**/*.js"], 
 };
 
 // Initialize swagger-jsdoc
