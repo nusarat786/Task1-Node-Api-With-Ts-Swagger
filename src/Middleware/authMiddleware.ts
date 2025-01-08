@@ -7,10 +7,10 @@ interface JwtPayload {
 }
 
 interface AuthenticatedRequest extends Request {
-  user?: JwtPayload;
+  //admin?: JwtPayload;
 }
 
-const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   const authHeader = req.headers["authorization"];
   
   if (!authHeader) {
@@ -26,7 +26,10 @@ const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunc
 
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET || "") as JwtPayload;
-    req.user = payload; 
+    //req.admin = payload; 
+    
+    (req as any).admin = payload;  
+
     next();
   } catch (err) {
     //console.error("Token verification error:", err);

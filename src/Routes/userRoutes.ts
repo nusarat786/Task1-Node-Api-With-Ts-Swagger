@@ -696,6 +696,10 @@ router.delete("/deleteUserById/:id",async (req:Request<{id:string}>,res:Response
 
 router.post('/addUser-v2',authMiddleware, async (req: Request<{}, {}, AddUserRequestBody>, res: Response,next:NextFunction) => {
   try {
+
+    const admin = (req as any).admin;
+
+
     const { name, email, dob, isActive } = req.body;
 
     const tempUserObject = {
@@ -708,7 +712,7 @@ router.post('/addUser-v2',authMiddleware, async (req: Request<{}, {}, AddUserReq
     const newUser = new User(tempUserObject);
     const data = await newUser.save();
 
-    res.status(200).json(new ApiResponse(200,"user added",newUser));
+    res.status(200).json(new ApiResponse(200,`user added by ${admin?.name}`,newUser));
   } catch (error) {
     console.log('ok')
     next(error)
