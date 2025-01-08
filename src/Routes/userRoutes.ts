@@ -1,6 +1,8 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
 import User from '../Schema/UserSchema'; // Adjust the path if necessary
+import ApiResponse from '../Helper/apiResponse';
+import authMiddleware from '../Middleware/authMiddleware';
 //import { use } from 'express/lib/application';
 
 const router = Router();
@@ -105,7 +107,7 @@ router.post('/addUser', async (req: Request<{}, {}, AddUserRequestBody>, res: Re
     const newUser = new User(tempUserObject);
     const data = await newUser.save();
 
-    res.status(200).json({ error: false, message: 'User Added', data });
+    res.status(200).json(new ApiResponse(200,"user added",newUser));
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: true, message: 'Internal Server Error', errorobj: error });
@@ -600,8 +602,167 @@ router.delete("/deleteUserById/:id",async (req:Request<{id:string}>,res:Response
 
 
 
+/**
+* @openapi
+* /addUser-v2:
+*   post:
+*     summary: Add a new user with error handling middelware and jwt auth middelware 
+*     description: This endpoint allows the creation of a new user by providing the user's name, email, date of birth, and active status.
+*     tags:
+*       - Users
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               name:
+*                 type: string
+*                 example: Nusarat
+*               email:
+*                 type: string
+*                 example: nusarat@example.com
+*               dob:
+*                 type: string
+*                 format: date
+*                 example: '1990-01-01'
+*               isActive:
+*                 type: boolean
+*                 example: true
+*     responses:
+*       '200':
+*         description: Successfully added the user
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 error:
+*                   type: boolean
+*                   example: false
+*                 message:
+*                   type: string
+*                   example: User Added
+*                 data:
+*                   type: object
+*                   properties:
+*                     _id:
+*                       type: string
+*                       example: '605c72ef1532073d30f4e5d7'
+*                     name:
+*                       type: string
+*                       example: Nusarat
+*                     email:
+*                       type: string
+*                       example: nusarat@example.com
+*                     dob:
+*                       type: string
+*                       format: date
+*                       example: '1990-01-01'
+*                     isActive:
+*                       type: boolean
+*                       example: true
+*       '401':
+*         description: Unauthorized - Missing or invalid token
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 error:
+*                   type: boolean
+*                   example: true
+*                 message:
+*                   type: string
+*                   example: Unauthorized
+*       '400':
+*         description: Internal Server Error
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 error:
+*                   type: boolean
+*                   example: true
+*                 message:
+*                   type: string
+*                   example: Internal Server Error
+*                 errorobj:
+*                   type: object
+*                   example: {}
+*/
+
+router.post('/addUser-v2',authMiddleware, async (req: Request<{}, {}, AddUserRequestBody>, res: Response,next:NextFunction) => {
+  try {
+    const { name, email, dob, isActive } = req.body;
+
+    const tempUserObject = {
+      name,
+      email,
+      dob,
+      isActive,
+    };
+
+    const newUser = new User(tempUserObject);
+    const data = await newUser.save();
+
+    res.status(200).json(new ApiResponse(200,"user added",newUser));
+  } catch (error) {
+    console.log('ok')
+    next(error)
+
+  }
+});
+
+
+
+
+// router.post('/addUser-v2',authMiddleware, async (req: Request<{}, {}, AddUserRequestBody>, res: Response) => {
+//   try {
+//     const { name, email, dob, isActive } = req.body;
+
+//     const tempUserObject = {
+//       name,
+//       email,
+//       dob,
+//       isActive,
+//     };
+
+//     const newUser = new User(tempUserObject);
+//     const data = await newUser.save();
+
+//     res.status(200).json(new ApiResponse(200,"user added",newUser));
+//   } catch (error) {
+//     console.error(error);
+//     res.status(400).json({ error: true, message: 'Internal Server Error', errorobj: error });
+//   }
+// });
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 export default router;
+
+
+
+
+
+
+
+
+
+
+
+

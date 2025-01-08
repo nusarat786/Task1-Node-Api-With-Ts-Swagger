@@ -4,7 +4,9 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dbConnect from './Db/mogoConnect'
 import userRoutes from './Routes/userRoutes';
+import adminRoutes from './Routes/adminRoutes'
 import swaggerDocs from '../swagger'
+import errorHandler from './Middleware/errorHandler';
 
 const port = 4000;
 const app = express();
@@ -24,7 +26,9 @@ app.get("/",(req,res)=>{
 })
 
 app.use(userRoutes)
+app.use(adminRoutes)
 
+app.use(errorHandler)
 
 app.listen(port,()=>{
     console.log(`app is started on http://localhost:${port}/`)
