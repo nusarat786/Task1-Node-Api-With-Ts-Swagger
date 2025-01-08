@@ -1,3 +1,5 @@
+//modified by me
+
 import { Express, Request, Response } from "express";
 import express from "express";
 import swaggerJsdoc from "swagger-jsdoc";
@@ -69,10 +71,19 @@ function swaggerDocs(app: express.Application, port: number) {
         res.send(swaggerSpec);
     });
 
+    app.get("/docs.json", (req: Request, res: Response) => {
+        res.setHeader("Content-Type", "application/json");
+        res.send(swaggerSpec);
+    });
+
     console.log(`Docs available at http://localhost:${port}/docs`);
+    console.log(`Download json doc at http://localhost:${port}/docs.json`);
 }
 
 export default swaggerDocs;
+
+
+// wise dv current
 
 // import { Express, Request, Response } from "express";
 // import express from 'express'
