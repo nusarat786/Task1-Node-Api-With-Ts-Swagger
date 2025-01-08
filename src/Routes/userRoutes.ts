@@ -522,5 +522,86 @@ router.get("/getUserById/:id",async (req:Request<{id:string}>,res:Response)=>{
 })
 
 
+/**
+ * @openapi
+ * /deleteUserById/{id}:
+ *   delete:
+ *     summary: delete user by id.
+ *     tags:
+ *       - Users
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: id of the user to be deleted.
+ *     responses:
+ *       200:
+ *         description: user is deleted successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 deletedUser:
+ *                   $ref: '#/components/schemas/AddUserRequestBody'
+ *       401:
+ *         description: No user found with the given ID.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Internal Server Error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 errorobj:
+ *                   type: object
+ */
+router.delete("/deleteUserById/:id",async (req:Request<{id:string}>,res:Response)=>{
+  try{
+    const id = req.params.id;
+    const deletedUser = await User.findByIdAndDelete(id)
+
+    if(!deletedUser){
+      res.status(401).json({ error: true, message: `No user found with the given ID: ${id}` });
+      return;
+    }
+
+    res.status(200).json({
+      error: false,
+      message: "user deleted successfully",
+      deletedUser,
+    });
+
+  }catch(error){
+
+    console.error(error);
+    res.status(400).json({ error: true, message: 'Internal Server Error', errorobj: error });
+  }
+})
+
+
+
+
+
+
 
 export default router;
